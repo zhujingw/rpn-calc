@@ -1,0 +1,14 @@
+.section rodata
+
+.section init
+.temps r6, r7
+.section stk
+.space 100000
+.section init
+.zero r0
+
+.section main
+    goto text
+
+.section text
+
