@@ -1,7 +1,14 @@
+# r0 - zero
+# r1 - result / return address
+# r2 - call stack ptr
+# r3 - val stack ptr
+# r4 - GPR
+# r5 - GPR
+# r6 - temp
+# r7 - temp
+
 .zero r0
 .temps r6, r7
-
-.section rodata
 
 .section init
 jumptable:
@@ -44,7 +51,11 @@ digits_init:
   r6 := jumptable + '\n'
   m[r0][r6] := out
   r6 := jumptable + 'z'
-  m[r0][r6] := zero 
+  m[r0][r6] := zero
+val_stack:
+  .space 2              # store base pointer & offset from bp
+  r1 := m[r0][r5 + 1]   # val stack ptr gets end of jumptable
+  r3 := 0
 
 digits:
 
@@ -55,7 +66,11 @@ input_error:
 .section text
 
 main:
+  goto create_val_stack
   goto waiting
+
+create_val_stack:
+  
 
 waiting:
   r1 := input()
