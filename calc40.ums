@@ -1,14 +1,81 @@
+.zero r0
+.temps r6, r7
+
 .section rodata
 
 .section init
-.temps r6, r7
-.section stk
-.space 100000
-.section init
-.zero r0
+jumptable:
+  .space 256
+  r7 := 0
+  r5 := 256
+jumptable_init:
+  r6 := jumptable + r7
+  m[r0][r6] := input_error
+  r7 := r7 + 1 
+  if (r7 != r5) goto jumptable_init using r4
+  r7 := '0'
+digits_init:
+  r6 := jumptable + r7
+  m[r0][r6] := digits
+  r7 := r7 + 1
+  if (r7 != 58) goto digits_init using r4,r5
+  r6 := jumptable + '+'
+  m[r0][r6] := add
+  r6 := jumptable + '-'
+  m[r0][r6] := sub
+  r6 := jumptable + '*'
+  m[r0][r6] := mul
+  r6 := jumptable + '&'
+  m[r0][r6] := and
+  r6 := jumptable + '|'
+  m[r0][r6] := or
+  r6 := jumptable + '~'
+  m[r0][r6] := com
+  r6 := jumptable + 'c'
+  m[r0][r6] := neg
+  r6 := jumptable + '/'
+  m[r0][r6] := div
+  r6 := jumptable + 's'
+  m[r0][r6] := swap
+  r6 := jumptable + 'd'
+  m[r0][r6] := dup
+  r6 := jumptable + 'p'
+  m[r0][r6] := pop_val
+  r6 := jumptable + '\n'
+  m[r0][r6] := out
+  r6 := jumptable + 'z'
+  m[r0][r6] := zero 
 
-.section main
-    goto text
+digits:
+
+input_error:
+  output "unknown character\n"
+  goto waiting
 
 .section text
 
+main:
+  goto waiting
+
+waiting:
+  r1 := input()
+
+waiting_with_character:
+  // cmp r1,0;
+
+entering: 
+  r1 := input()
+
+add:
+sub:
+mul:
+and:
+or:
+com:
+neg:
+div:
+swap:
+pop_val:
+dup:
+out:
+zero:

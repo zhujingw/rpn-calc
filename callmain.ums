@@ -1,8 +1,4 @@
-.section text
+.section init
 .zero r0
-.temps r6, r7
-
-start:
-r0 := 0
-r2 := endstack
-goto main
+.temps r6,r7
+.section text
