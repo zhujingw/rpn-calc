@@ -1,6 +1,29 @@
 .zero r0
 .temps r6,r7
 print:
+  r5 := end_tempstk
+mov_stk:
+  if (r2 == endstack) goto print_digits using r4
   pop r4 off stack r2
-  output r4
-  if (r2 != endstack) goto print using r5
+  push r4 on stack r5
+  output r4 + 48
+  output "\n"
+  goto mov_stk
+print_digits:
+  r3 := end_printstk
+  if (r5 == end_tempstk) goto r1 using r4
+  pop r4 off stack r5
+multi_digit:
+  r3 := r4 mod 10
+  // output r4 + 48
+  // output "\n"
+  goto print_digits
+  
+  
+
+//   # r4 := r4 + 48
+//   # output r4
+//   # output "\n"
+//   # if (r2 != endstack) goto print using r4
+// # print_mul:
+//   # if (r2 != endstack) goto print using r4

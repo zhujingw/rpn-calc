@@ -4,4 +4,5 @@
 .section text
 main:
   output "main\n"
+  r3 := r0
   goto waiting

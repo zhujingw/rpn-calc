@@ -3,6 +3,10 @@
 .section stk
   .space 10000
 endstack:
+  .space 10       # used for printing - max 10 digit numbers
+end_printstk:
+  .space 10000    # during printing, have to pop from and 
+end_tempstk:      # push back to original stack to preserve contents
 .section init
 start:
   r0 := 0
