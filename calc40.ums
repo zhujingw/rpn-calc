@@ -26,13 +26,18 @@ jumptable_init:
   if (r3 != r4) goto jumptable_init using r5
   .temps r6, r7
   r3 := '0'
+<<<<<<< HEAD
   r4 := 58      # 58 == '0' + 10
+=======
+  r4 := 58
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
 digits_init:
   r5 := jumptable + r3
   m[r0][r5] := push_val_stack
   r3 := r3 + 1
   if (r3 != r4) goto digits_init using r5
   .temps r6, r7
+<<<<<<< HEAD
   r5 := jumptable + '+'
   m[r0][r5] := add
   r5 := jumptable + '-'
@@ -61,6 +66,34 @@ digits_init:
   m[r0][r5] := zero
   r5 := jumptable + ' '
   m[r0][r5] := waiting
+=======
+  r6 := jumptable + '+'
+  m[r0][r6] := add
+  r6 := jumptable + '-'
+  m[r0][r6] := sub
+  r6 := jumptable + '*'
+  m[r0][r6] := mul
+  r6 := jumptable + '&'
+  m[r0][r6] := and
+  r6 := jumptable + '|'
+  m[r0][r6] := or
+  r6 := jumptable + '~'
+  m[r0][r6] := com
+  r6 := jumptable + 'c'
+  m[r0][r6] := neg
+  r6 := jumptable + '/'
+  m[r0][r6] := div
+  r6 := jumptable + 's'
+  m[r0][r6] := swap
+  r6 := jumptable + 'd'
+  m[r0][r6] := dup
+  r6 := jumptable + 'p'
+  m[r0][r6] := pop_val
+  r6 := jumptable + '\n'
+  m[r0][r6] := out
+  r6 := jumptable + 'z'
+  m[r0][r6] := zero
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto main
 
 input_error:
@@ -69,27 +102,45 @@ input_error:
 
 .section text
 waiting:
+<<<<<<< HEAD
   r1 := input()
   output r1
+=======
+  output "waiting\n"
+  r4 := input()
+  output r4
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   output "\n"
   goto waiting_with_character
 
 waiting_with_character:
+<<<<<<< HEAD
   if (r1 == -1) goto end_of_program using r5
   .temps r6, r7
   r5 := jumptable + r1
+=======
+  output "waiting w char\n"
+  if (r4 == -1) goto end_of_program using r5
+  .temps r6, r7
+  r5 := jumptable + r4
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   r5 := m[r0][r5]
   goto r5
 
 push_val_stack:   # an intermediary between waiting_with_char and entering
   output "push val stack\n"
+<<<<<<< HEAD
   push r1 on stack r2
   r3 := r3 - 1
+=======
+  push r4 on stack r2
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto entering
 
 entering: 
   output "entering\n"
   .temps r6, r7
+<<<<<<< HEAD
   r1 := input()
   if (r1 == ' ') goto waiting using r5
   if (r1 == '0') goto multiple_digit using r5
@@ -106,16 +157,43 @@ entering:
 
 single_digit:
   push r1 on stack r2
+=======
+  r4 := input()
+  if (r4 == '0') goto multiple_digit using r5
+  if (r4 == '1') goto multiple_digit using r5
+  if (r4 == '2') goto multiple_digit using r5
+  if (r4 == '3') goto multiple_digit using r5
+  if (r4 == '4') goto multiple_digit using r5
+  if (r4 == '5') goto multiple_digit using r5
+  if (r4 == '6') goto multiple_digit using r5
+  if (r4 == '7') goto multiple_digit using r5
+  if (r4 == '8') goto multiple_digit using r5
+  if (r4 == '9') goto multiple_digit using r5
+  goto waiting_with_character
+
+single_digit:
+  push r4 on stack r2
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   r3 := r3 + 1
   goto entering
 
 multiple_digit:
+<<<<<<< HEAD
   output "multiple digit\n"
   goto check_has_2 linking r1
   pop r5 off stack r2
   r5 := r5 * 10
   r1 := r1 + r5
   goto push_val_stack
+=======
+  output "mult digit\n"
+  goto check_has_2 linking r1
+  pop r5 off stack r2
+  r5 := r5 * 10
+  r4 := r4 + r5
+  push r4 on stack r2
+  goto entering
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
 
 # ------------------------------- "assertions" --------------------------------
 check_has_1:
@@ -132,7 +210,10 @@ stack_underflow:
 
 # -------------------------------- operations ---------------------------------
 add:
+<<<<<<< HEAD
   output "add\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_2 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -143,7 +224,10 @@ add:
   goto waiting
 
 sub:
+<<<<<<< HEAD
   output "sub\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_2 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -154,7 +238,10 @@ sub:
   goto waiting 
 
 mul:
+<<<<<<< HEAD
   output "mul\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_2 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -165,7 +252,10 @@ mul:
   goto waiting
 
 div:
+<<<<<<< HEAD
   output "div\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_2 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -189,7 +279,10 @@ neg_denom:
   goto waiting
 
 or:
+<<<<<<< HEAD
   output "or\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_2 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -200,7 +293,10 @@ or:
   goto waiting
 
 and: 
+<<<<<<< HEAD
   output "and\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_2 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -211,7 +307,10 @@ and:
   goto waiting
 
 com:
+<<<<<<< HEAD
   output "com\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_1 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -220,7 +319,10 @@ com:
   goto waiting
 
 neg:
+<<<<<<< HEAD
   output "neg\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_1 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -229,7 +331,10 @@ neg:
   goto waiting 
 
 swap:
+<<<<<<< HEAD
   output "swap\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_2 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -239,7 +344,10 @@ swap:
   goto waiting
 
 dup:
+<<<<<<< HEAD
   output "dup\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_1 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -249,7 +357,10 @@ dup:
   goto waiting
 
 pop_val:
+<<<<<<< HEAD
   output "pop_val\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   goto check_has_1 linking r1
   .temps r6,r7
   pop r4 off stack r2
@@ -257,17 +368,26 @@ pop_val:
   goto waiting
 
 out:
+<<<<<<< HEAD
   output "out\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   # print
   goto waiting
 
 zero:
+<<<<<<< HEAD
   output "zero"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   if (r3 == 0) goto waiting
   pop r4 off stack r2
   r3 := r3 - 1
   goto zero
 
 end_of_program:
+<<<<<<< HEAD
   output "bye\n"
+=======
+>>>>>>> 668f835ec61a7b7bacc4edf3e55005e800e34425
   halt
