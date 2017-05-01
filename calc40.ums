@@ -78,7 +78,7 @@ waiting_with_character:
   r5 := jumptable + r1
   if (r4 == -1) goto end_of_program using r5
   .temps r6, r7
-  r5 := jumptable + r4
+  r5 := jumptable + r1
   r5 := m[r0][r5]
   goto r5
 
