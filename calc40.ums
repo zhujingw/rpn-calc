@@ -69,6 +69,7 @@ input_error:
 
 .section text
 waiting:
+  output "waiting\n"
   r1 := input()
   goto waiting_with_character
 
@@ -258,7 +259,7 @@ pop_val:
 
 out:
   output "out\n"
-  # print
+  goto print
   goto waiting
 
 zero:

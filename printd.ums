@@ -1,1 +1,6 @@
+.zero r0
+.temps r6,r7
 print:
+  pop r4 off stack r2
+  output r4
+  if (r2 != endstack) goto print using r5
