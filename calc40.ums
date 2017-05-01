@@ -10,87 +10,264 @@
 .zero r0
 .temps r6, r7
 
+val_stack:
+  .space 2        # 1 for value stack ptr, 1 for value stack len
+
 .section init
+# r3 == counter; r4 == comparison; r5, r6, r7 == temps
 jumptable:
   .space 256
-  r7 := 0
-  r5 := 256
+  r3 := r0
+  r4 := 256
 jumptable_init:
-  r6 := jumptable + r7
-  m[r0][r6] := input_error
-  r7 := r7 + 1 
-  if (r7 != r5) goto jumptable_init using r4
-  r7 := '0'
+  r5 := jumptable + r3
+  m[r0][r5] := input_error
+  r3 := r3 + 1
+  if (r3 != r4) goto jumptable_init using r5
+  .temps r6, r7
+  r3 := '0'
+  r4 := 58      # 58 == '0' + 10
 digits_init:
-  r6 := jumptable + r7
-  m[r0][r6] := digits
-  r7 := r7 + 1
-  if (r7 != 58) goto digits_init using r4,r5
-  r6 := jumptable + '+'
-  m[r0][r6] := add
-  r6 := jumptable + '-'
-  m[r0][r6] := sub
-  r6 := jumptable + '*'
-  m[r0][r6] := mul
-  r6 := jumptable + '&'
-  m[r0][r6] := and
-  r6 := jumptable + '|'
-  m[r0][r6] := or
-  r6 := jumptable + '~'
-  m[r0][r6] := com
-  r6 := jumptable + 'c'
-  m[r0][r6] := neg
-  r6 := jumptable + '/'
-  m[r0][r6] := div
-  r6 := jumptable + 's'
-  m[r0][r6] := swap
-  r6 := jumptable + 'd'
-  m[r0][r6] := dup
-  r6 := jumptable + 'p'
-  m[r0][r6] := pop_val
-  r6 := jumptable + '\n'
-  m[r0][r6] := out
-  r6 := jumptable + 'z'
-  m[r0][r6] := zero
-val_stack:
-  .space 2              # store base pointer & offset from bp
-  r1 := m[r0][r5 + 1]   # val stack ptr gets end of jumptable
-  r3 := 0
-
-digits:
+  r5 := jumptable + r3
+  m[r0][r5] := push_val_stack
+  r3 := r3 + 1
+  if (r3 != r4) goto digits_init using r5
+  .temps r6, r7
+  r5 := jumptable + '+'
+  m[r0][r5] := add
+  r5 := jumptable + '-'
+  m[r0][r5] := sub
+  r5 := jumptable + '*'
+  m[r0][r5] := mul
+  r5 := jumptable + '&'
+  m[r0][r5] := and
+  r5 := jumptable + '|'
+  m[r0][r5] := or
+  r5 := jumptable + '~'
+  m[r0][r5] := com
+  r5 := jumptable + 'c'
+  m[r0][r5] := neg
+  r5 := jumptable + '/'
+  m[r0][r5] := div
+  r5 := jumptable + 's'
+  m[r0][r5] := swap
+  r5 := jumptable + 'd'
+  m[r0][r5] := dup
+  r5 := jumptable + 'p'
+  m[r0][r5] := pop_val
+  r5 := jumptable + '\n'
+  m[r0][r5] := out
+  r5 := jumptable + 'z'
+  m[r0][r5] := zero
+  r5 := jumptable + ' '
+  m[r0][r5] := waiting
+  goto main
 
 input_error:
-  output "unknown character\n"
+  output "Unknown character\n"
   goto waiting
 
 .section text
-
-main:
-  goto create_val_stack
-  goto waiting
-
-create_val_stack:
-  
-
 waiting:
   r1 := input()
+  output r1
+  output "\n"
+  goto waiting_with_character
 
 waiting_with_character:
-  // cmp r1,0;
+  if (r1 == -1) goto end_of_program using r5
+  .temps r6, r7
+  r5 := jumptable + r1
+  r5 := m[r0][r5]
+  goto r5
+
+push_val_stack:   # an intermediary between waiting_with_char and entering
+  output "push val stack\n"
+  push r1 on stack r2
+  r3 := r3 - 1
+  goto entering
 
 entering: 
+  output "entering\n"
+  .temps r6, r7
   r1 := input()
+  if (r1 == ' ') goto waiting using r5
+  if (r1 == '0') goto multiple_digit using r5
+  if (r1 == '1') goto multiple_digit using r5
+  if (r1 == '2') goto multiple_digit using r5
+  if (r1 == '3') goto multiple_digit using r5
+  if (r1 == '4') goto multiple_digit using r5
+  if (r1 == '5') goto multiple_digit using r5
+  if (r1 == '6') goto multiple_digit using r5
+  if (r1 == '7') goto multiple_digit using r5
+  if (r1 == '8') goto multiple_digit using r5
+  if (r1 == '9') goto multiple_digit using r5
+  goto waiting_with_character
 
+single_digit:
+  push r1 on stack r2
+  r3 := r3 + 1
+  goto entering
+
+multiple_digit:
+  output "multiple digit\n"
+  goto check_has_2 linking r1
+  pop r5 off stack r2
+  r5 := r5 * 10
+  r1 := r1 + r5
+  goto push_val_stack
+
+# ------------------------------- "assertions" --------------------------------
+check_has_1:
+  if (r3 >=s 1) goto r1 using r4;   # return if stack len >= 1
+  goto stack_underflow
+
+check_has_2:
+  if (r3 >=s 2) goto r1 using r4;   # return if stack len >= 2
+  goto stack_underflow
+
+stack_underflow:
+  output "Stack underflow\n"
+  goto waiting
+
+# -------------------------------- operations ---------------------------------
 add:
+  output "add\n"
+  goto check_has_2 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  pop r5 off stack r2
+  r4 := r4 + r5
+  push r4 on stack r2
+  r3 := r3 - 1
+  goto waiting
+
 sub:
+  output "sub\n"
+  goto check_has_2 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  pop r5 off stack r2
+  r4 := r4 - r5
+  push r4 on stack r2
+  r3 := r3 - 1
+  goto waiting 
+
 mul:
-and:
-or:
-com:
-neg:
+  output "mul\n"
+  goto check_has_2 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  pop r5 off stack r2
+  r4 := r4 * r5
+  push r4 on stack r2
+  r3 := r3 - 1
+  goto waiting
+
 div:
+  output "div\n"
+  goto check_has_2 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  pop r5 off stack r2
+  # if (r5 <s 0 ) goto neg_denom 
+  # if (r5 == 0 ) goto div_error
+  # if (r4 <s 0 ) goto neg_numerator
+  r4 := r4 / r5
+  push r4 on stack r2
+  r3 := r3 - 1
+  goto waiting
+
+div_error:
+  output "Division by zero\n"
+  pop stack r2
+
+neg_numerator:
+  goto waiting
+
+neg_denom:
+  goto waiting
+
+or:
+  output "or\n"
+  goto check_has_2 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  pop r5 off stack r2
+  r4 := r4 | r5
+  push r4 on stack r2
+  r3 := r3 - 1
+  goto waiting
+
+and: 
+  output "and\n"
+  goto check_has_2 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  pop r5 off stack r2
+  r4 := r4 & r5
+  push r4 on stack r2
+  r3 := r3 - 1
+  goto waiting
+
+com:
+  output "com\n"
+  goto check_has_1 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  r4 := ~r4
+  push r4 on stack r2
+  goto waiting
+
+neg:
+  output "neg\n"
+  goto check_has_1 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  r4 := -r4
+  push r4 on stack r2
+  goto waiting 
+
 swap:
-pop_val:
+  output "swap\n"
+  goto check_has_2 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  pop r5 off stack r2
+  push r4 on stack r2
+  push r5 on stack r2
+  goto waiting
+
 dup:
+  output "dup\n"
+  goto check_has_1 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  push r4 on stack r2
+  push r4 on stack r2
+  r3 := r3 + 1
+  goto waiting
+
+pop_val:
+  output "pop_val\n"
+  goto check_has_1 linking r1
+  .temps r6,r7
+  pop r4 off stack r2
+  r3 := r3 - 1
+  goto waiting
+
 out:
+  output "out\n"
+  # print
+  goto waiting
+
 zero:
+  output "zero"
+  if (r3 == 0) goto waiting
+  pop r4 off stack r2
+  r3 := r3 - 1
+  goto zero
+
+end_of_program:
+  output "bye\n"
+  halt

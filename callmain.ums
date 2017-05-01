@@ -1,5 +1,7 @@
 .zero r0
-.temps r6,r7
-.section init
+.temps r6, r7
+
 .section text
-halt
+main:
+  output "main\n"
+  goto waiting
