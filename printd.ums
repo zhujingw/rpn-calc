@@ -1,29 +1,91 @@
-.zero r0
-.temps r6,r7
-print:
-  r5 := end_tempstk
-mov_stk:
-  if (r2 == endstack) goto print_digits using r4
-  pop r4 off stack r2
-  push r4 on stack r5
-  output r4 + 48
-  output "\n"
-  goto mov_stk
-print_digits:
-  r3 := end_printstk
-  if (r5 == end_tempstk) goto r1 using r4
-  pop r4 off stack r5
-multi_digit:
-  r3 := r4 mod 10
-  // output r4 + 48
-  // output "\n"
-  goto print_digits
-  
-  
+#######################         rpn calculator      ###########################
+####################### Zhujing Wang & Michelle Luo ###########################
+#######################          May 02, 2017       ###########################
 
-//   # r4 := r4 + 48
-//   # output r4
-//   # output "\n"
-//   # if (r2 != endstack) goto print using r4
-// # print_mul:
-//   # if (r2 != endstack) goto print using r4
+# r0 - zero
+# r1 - result / return address
+# r2 - stack ptr
+# r3 - GPR
+# r4 - GPR
+# r5 - GPR
+# r6 - temp
+# r7 - temp
+
+.zero r0
+.temp r6, r7
+
+.section text
+
+# loop thru value stack to print out the stack 
+print_general:
+    if (r4 == val_stk) goto stop_print using r5 
+    output ">>> "
+    r5 := m[r0][r4]     
+    push r5 on stack r2     
+    goto print_help linking r1    
+    output "\n"     
+    r4 := r4 + 1 
+    goto print_general 
+
+stop_print:
+    pop r4 off stack r2   
+    goto waiting      
+
+# push and pop designated value from the stack to preserve/ print 
+print_help:
+    pop r5 off stack r2   
+    push r1 on stack r2    
+    push r3 on stack r2   
+    push r4 on stack r2   
+
+################################## edge cases #################################
+#just in case sign comparison does not always work 
+check_max_neg:
+    push r4 on stack r2
+    r4 := 2147483648    
+    r4 := -r4       
+    if (r5 == r4 ) goto print_max_neg using r1  
+    pop r4 off stack r2        
+
+check_if_neg:
+    if (r5 <s 0) goto print_neg using r1  
+    goto print_digits 
+
+print_neg:
+    output "-"  
+    r5 := -r5 
+
+############################### helper functions ##############################
+#print multipule-digit number digit by digit 
+print_digits:
+    r3 := r5      
+    r4 := r3 / 10       
+    if (r4 != 0) goto recursion 
+    r5 := single_digit
+    r1 := print_remainder
+
+print_remainder:
+    r4 := r4 * 10     
+    r3 := r3 - r4       
+
+single_digit:
+    r3 := r3 + 48    
+    output r3     
+    pop r4 off stack r2
+    pop r3 off stack r2
+    pop r5 off stack r2 
+    goto r5      
+
+print_max_neg:
+    output "-2147483648"
+    pop r4 off stack r2
+    pop r4 off stack r2   
+    pop r3 off stack r2   
+    pop r1 off stack r2   
+    goto print_general using r5  
+
+#recursion label          
+recursion:
+    push r4 on stack r2   
+    r1 := print_remainder   
+    goto print_help

@@ -1,8 +1,5 @@
 .zero r0
 .temps r6, r7
-
-.section text
-main:
-  output "main\n"
-  r3 := r0
-  goto waiting
+.section init
+main: 
+    goto waiting
